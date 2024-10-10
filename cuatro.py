@@ -5,13 +5,13 @@ from scipy import signal
 # Parámetros
 f = 5  # Frecuencia de la onda
 Am = 1  # Amplitud de la onda
-Ti = 0  # Tiempo inicial
-Tf = 1  # Tiempo final
+Ti = -1  # Tiempo inicial
+Tf = 2  # Tiempo final
 Nm = 10000  # Número de muestras
 t = np.linspace(Ti, Tf, Nm)
 a = 1  # Factor de proporcionalidad de función exponencial
 k = 2  # Factor de proporcionalidad aplicado
-t_shift = 0.5  # Corrimiento temporal (en segundos)
+Desplazamiento = 1  # Corrimiento temporal (en segundos)
 
 # Onda senoidal
 senoidal = Am * np.sin(2 * np.pi * f * t)
@@ -20,13 +20,13 @@ senoidal = Am * np.sin(2 * np.pi * f * t)
 cuadrada = Am * signal.square(2 * np.pi * f * t)
 
 # Onda triangular
-triangular = Am * signal.sawtooth(2 * np.pi * f * t + t_shift, 0.5)
+triangular = Am * signal.sawtooth(2 * np.pi * f * t + Desplazamiento, 0.5)
 
 # Onda de diente de sierra
 diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
 
 # Aplicar corrimiento temporal a las respuestas a impulso
-t_aplicado = t - t_shift  # Aplicar corrimiento temporal hacia la derecha
+t_aplicado = t - Desplazamiento  # Aplicar corrimiento temporal hacia la derecha
 
 # Exponencial decreciente con factor de proporcionalidad y corrimiento
 exp_decreciente = k * np.exp(-a * t_aplicado) * ((np.heaviside(t_aplicado, 1)) - (np.heaviside(t_aplicado - 1, 1)))
@@ -35,15 +35,16 @@ exp_decreciente = k * np.exp(-a * t_aplicado) * ((np.heaviside(t_aplicado, 1)) -
 exp_creciente = k * np.exp(a * t_aplicado) * ((np.heaviside(t_aplicado, 1)) - (np.heaviside(t_aplicado - 1, 1)))
 
 # Impulso
-
-
-def ddf(t,sig):
-    val = np.zeros_like(t)
-    val[(-(1/(2*sig))<=t) & (t<=(1/(2*sig)))] = 1
+def impulsoArr(t,Desplazamiento):
+    M = len(t)
+    val = np.zeros(M)
+    val[Desplazamiento] = 1
     return val
-sig=100000000
 
-impulso = np.where(t == 1000, 1, 0)
+taux = np.linspace(0, 1, Nm)
+impulso = impulsoArr(t,Desplazamiento)
+
+
 # Escalón con factor de proporcionalidad
 escalon = k * np.heaviside(t_aplicado, 1)
 
@@ -59,25 +60,25 @@ plt.figure(figsize=(16, 10))
 # Senoidal con Exponencial Decreciente
 plt.subplot(4, 1, 1)
 plt.plot(t, conv_seno_expon_decreciente)
-plt.title(f'Convolución Senoidal y Exponencial Decreciente (k={k}, Corrimiento={t_shift}s)')
+plt.title(f'Convolución Senoidal y Exponencial Decreciente (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Cuadrada con Exponencial Creciente
 plt.subplot(4, 1, 2)
 plt.plot(t, conv_cuadrada_expon_creciente)
-plt.title(f'Convolución Cuadrada y Exponencial Creciente (k={k}, Corrimiento={t_shift}s)')
+plt.title(f'Convolución Cuadrada y Exponencial Creciente (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Impulso con Triangular
 plt.subplot(4, 1, 3)
 plt.plot(t, conv_impulso_triangular)
-plt.title(f'Convolución Impulso y Triangular (k={k}, Corrimiento={t_shift}s)')
+plt.title(f'Convolución Impulso y Triangular (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Sierra con Escalón
 plt.subplot(4, 1, 4)
 plt.plot(t, conv_sierra_escalon)
-plt.title(f'Convolución Sierra y Escalón (k={k}, Corrimiento={t_shift}s)')
+plt.title(f'Convolución Sierra y Escalón (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 plt.tight_layout()
