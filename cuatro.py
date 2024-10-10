@@ -2,61 +2,82 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-# Parámetros para las señales
-fs = 1000  # Frecuencia de muestreo
-T = 1  # Duración en segundos
-t_periodica = np.linspace(0, T, int(fs * T), endpoint=False)
-t_aperiodica = np.linspace(-1, 2, int(fs * 3), endpoint=False)
+# Parámetros
+f = 5  # Frecuencia de la onda
+Am = 1  # Amplitud de la onda
+Ti = 0  # Tiempo inicial
+Tf = 1  # Tiempo final
+Nm = 10000  # Número de muestras
+t = np.linspace(Ti, Tf, Nm)
+a = 1  # Factor de proporcionalidad de función exponencial
+k = 2  # Factor de proporcionalidad aplicado
+t_shift = 0.5  # Corrimiento temporal (en segundos)
 
-# Factores de proporcionalidad y corrimiento temporal
-k = 2  # Factor de proporcionalidad 
-corrimiento = 0.1  # Corrimiento temporal 
+# Onda senoidal
+senoidal = Am * np.sin(2 * np.pi * f * t)
 
-# Ajustar el vector de tiempo para aplicar el corrimiento
-t_aperiodica_corrida = t_aperiodica - corrimiento  # Corrimiento hacia la derecha
+# Onda cuadrada
+cuadrada = Am * signal.square(2 * np.pi * f * t)
 
-# Señales Periódicas
-senoidal = np.sin(2 * np.pi * 5 * t_periodica)  # Señal senoidal
-cuadrada = signal.square(2 * np.pi * 5 * t_periodica)  # Señal cuadrada
-triangular = signal.sawtooth(2 * np.pi * 5 * t_periodica, 0.5)  # Señal triangular
-diente_sierra = signal.sawtooth(2 * np.pi * 5 * t_periodica)  # Señal diente de sierra
+# Onda triangular
+triangular = Am * signal.sawtooth(2 * np.pi * f * t + t_shift, 0.5)
 
-# Señales Aperiódicas modificadas con el factor de proporcionalidad y corrimiento temporal
-exp_decreciente = k * np.exp(-t_aperiodica_corrida) * ((t_aperiodica_corrida >= 0) & (t_aperiodica_corrida < 1))
-exp_creciente = k * np.exp(t_aperiodica_corrida) * ((t_aperiodica_corrida >= 0) & (t_aperiodica_corrida < 1))
+# Onda de diente de sierra
+diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
 
-# Mejorar la aproximación de la función impulso
-impulso = k * np.where(np.abs(t_aperiodica_corrida) < 0.01, 1, 0)  # Impulso como una ventana más pequeña
+# Aplicar corrimiento temporal a las respuestas a impulso
+t_aplicado = t - t_shift  # Aplicar corrimiento temporal hacia la derecha
 
-escalon = k * np.where(t_aperiodica_corrida >= 0, 1, 0)
+# Exponencial decreciente con factor de proporcionalidad y corrimiento
+exp_decreciente = k * np.exp(-a * t_aplicado) * ((np.heaviside(t_aplicado, 1)) - (np.heaviside(t_aplicado - 1, 1)))
 
-# Realizar convoluciones (cada señal periódica con una aperiódica modificada)
-conv_senoidal_exp_decreciente = np.convolve(senoidal, exp_decreciente, mode='same')[:len(t_periodica)]
-conv_cuadrada_exp_creciente = np.convolve(cuadrada, exp_creciente, mode='same')[:len(t_periodica)]
-conv_triangular_impulso = np.convolve(triangular, impulso, mode='same')[:len(t_periodica)]
-conv_diente_sierra_escalon = np.convolve(diente_sierra, escalon, mode='same')[:len(t_periodica)]
+# Exponencial creciente con factor de proporcionalidad y corrimiento
+exp_creciente = k * np.exp(a * t_aplicado) * ((np.heaviside(t_aplicado, 1)) - (np.heaviside(t_aplicado - 1, 1)))
 
-# Graficar las señales convolucionadas con el factor de proporcionalidad y corrimiento temporal
-plt.figure(figsize=(12, 10))
+# Impulso
 
+
+def ddf(t,sig):
+    val = np.zeros_like(t)
+    val[(-(1/(2*sig))<=t) & (t<=(1/(2*sig)))] = 1
+    return val
+sig=100000000
+
+impulso = np.where(t == 1000, 1, 0)
+# Escalón con factor de proporcionalidad
+escalon = k * np.heaviside(t_aplicado, 1)
+
+# Convoluciones
+conv_seno_expon_decreciente = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
+conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full')[:len(t)]
+conv_impulso_triangular = np.convolve(triangular, impulso, mode='full')[:len(t)]
+conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
+
+# Graficar las señales y sus convoluciones
+plt.figure(figsize=(16, 10))
+
+# Senoidal con Exponencial Decreciente
 plt.subplot(4, 1, 1)
-plt.plot(t_periodica, conv_senoidal_exp_decreciente)
-plt.title(f'Convolución: Señal Senoidal con Exp. Decreciente (k={k}, Corrimiento={corrimiento}s)')
+plt.plot(t, conv_seno_expon_decreciente)
+plt.title(f'Convolución Senoidal y Exponencial Decreciente (k={k}, Corrimiento={t_shift}s)')
 plt.grid(True)
 
+# Cuadrada con Exponencial Creciente
 plt.subplot(4, 1, 2)
-plt.plot(t_periodica, conv_cuadrada_exp_creciente)
-plt.title(f'Convolución: Señal Cuadrada con Exp. Creciente (k={k}, Corrimiento={corrimiento}s)')
+plt.plot(t, conv_cuadrada_expon_creciente)
+plt.title(f'Convolución Cuadrada y Exponencial Creciente (k={k}, Corrimiento={t_shift}s)')
 plt.grid(True)
 
+# Impulso con Triangular
 plt.subplot(4, 1, 3)
-plt.plot(t_periodica, conv_triangular_impulso)
-plt.title(f'Convolución: Señal Triangular con Impulso (k={k}, Corrimiento={corrimiento}s)')
+plt.plot(t, conv_impulso_triangular)
+plt.title(f'Convolución Impulso y Triangular (k={k}, Corrimiento={t_shift}s)')
 plt.grid(True)
 
+# Sierra con Escalón
 plt.subplot(4, 1, 4)
-plt.plot(t_periodica, conv_diente_sierra_escalon)
-plt.title(f'Convolución: Señal Diente de Sierra con Escalón (k={k}, Corrimiento={corrimiento}s)')
+plt.plot(t, conv_sierra_escalon)
+plt.title(f'Convolución Sierra y Escalón (k={k}, Corrimiento={t_shift}s)')
 plt.grid(True)
 
 plt.tight_layout()

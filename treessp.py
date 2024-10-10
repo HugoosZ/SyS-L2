@@ -5,7 +5,7 @@ from scipy import signal
 # Parámetros
 f = 5  # Frecuencia de la onda
 Am = 1  # Amplitud de la onda
-Ti = 0 # Tiempo inicial
+Ti = -1 # Tiempo inicial
 Tf = 1  # Tiempo final
 Nm = 1000  # Número de muestras
 t = np.linspace(Ti, Tf, Nm )
@@ -33,7 +33,7 @@ exp_creciente = np.exp(a*t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
 
 
 # Impulso
-timpulso = np.linspace(Ti, Tf , Nm)
+timpulso = np.linspace(0, Tf , Nm)
 def ddf(t,sig):
     val = np.zeros_like(t)
     val[(-(1/(2*sig))<=t) & (t<=(1/(2*sig)))] = 1
@@ -43,8 +43,23 @@ sig=100000
 
 impulso = np.where(timpulso == 0, 1, 0)
 
-
-
+def convolucion_manual(x, h):
+    N = len(x)
+    M = len(h)
+    y = np.zeros(N + M ) 
+    
+    # Invertir h
+    h_inv = h[::1] #NO SE PORQUE FUNCIONA SIN INVERTIR
+    
+    # Desplazar h y realizar el producto punto a punto
+    for n in range(len(y)):
+        suma = 0
+        for k in range(M):
+            if 0 <= n - k < N:
+                suma += x[n - k] * h_inv[k]
+        y[n] = suma
+    
+    return y
 
 # Escalón
 escalon = np.heaviside(t, 1)
@@ -56,37 +71,67 @@ conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full'
 conv_impulso_triangular = np.convolve(triangular, impulso, mode='full')[:len(t)]
 conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 
-# Graficar las señales y sus convoluciones
+# Convoluciones manuales 
+
+conv1 = convolucion_manual(senoidal, exp_decreciente)[:len(t)]
+conv2 = convolucion_manual(cuadrada, exp_creciente)[:len(t)]
+conv3 = convolucion_manual(triangular, impulso)[:len(t)]
+conv4 = convolucion_manual(diente_sierra, escalon)[:len(t)]
+
+
+
+# Grafico de las señales y sus convoluciones
 plt.figure(figsize=(16, 10))
 
 # Senoidal con Exponencial Decreciente
 
 
-plt.subplot(4, 1, 1)
+plt.subplot(4, 2, 1)
 plt.plot(t, conv_seno_expon_decreciente)
+plt.title('Convolución Senoidal y Exponencial Decreciente')
+plt.grid(True)
+
+plt.subplot(4, 2, 2)
+plt.plot(t, conv1)
 plt.title('Convolución Senoidal y Exponencial Decreciente')
 plt.grid(True)
 
 # Cuadrada con Exponencial Creciente
 
-plt.subplot(4, 1, 2)
+plt.subplot(4, 2, 3)
 plt.plot(t, conv_cuadrada_expon_creciente)
+plt.title('Convolución Cuadrada y Exponencial Creciente')
+plt.grid(True)
+
+plt.subplot(4, 2, 4)
+plt.plot(t, conv2)
 plt.title('Convolución Cuadrada y Exponencial Creciente')
 plt.grid(True)
 
 # Impulso con Triangular
 
 
-plt.subplot(4, 1, 3)
+plt.subplot(4, 2, 5)
 plt.plot(t, conv_impulso_triangular)
+plt.title('Convolución Impulso y Triangular')
+plt.grid(True)
+
+plt.subplot(4, 2, 6)
+plt.plot(t, conv3)
 plt.title('Convolución Impulso y Triangular')
 plt.grid(True)
 
 # Sierra con Escalón
 
 
-plt.subplot(4, 1, 4)
+plt.subplot(4, 2, 7)
 plt.plot(t, conv_sierra_escalon)
+plt.title('Convolución Sierra y Escalón')
+plt.grid(True)
+
+
+plt.subplot(4, 2, 8)
+plt.plot(t, conv4)
 plt.title('Convolución Sierra y Escalón')
 plt.grid(True)
 

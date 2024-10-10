@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 # Vector de tiempo para las señales periódicas y aperiódicas
-fs = 1000  # Frecuencia de muestreo
-T = 1  # Duración en segundos
+fs = 3000  # Frecuencia de muestreo
+T = 2  # Duración en segundos
 t_periodica = np.linspace(0, T, fs , endpoint=False)  # Vector de tiempo para señales periódicas
-t_aperiodicae = np.linspace(0, T, fs , endpoint=False)  # Vector de tiempo para señales aperiódicas
+t_aperiodicae = np.linspace(-1, T, fs , endpoint=False)  # Vector de tiempo para señales aperiódicas
 
 # Señales Periódicas
 senoidal = np.sin(2 * np.pi * 5 * t_periodica)  
@@ -24,7 +24,7 @@ def ddf(t,sig):
     return val
 
 sig=1000
-impulso = ddf(t_aperiodicae,sig)
+impulso = np.where(t_aperiodicae == 0, 1, 0)
 escalon = np.heaviside(t_aperiodicae, 1)
 
 # Realizar convoluciones (todas en modo 'full')
