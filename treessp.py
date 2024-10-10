@@ -4,120 +4,89 @@ from scipy import signal
 
 # Parámetros
 f = 5  # Frecuencia de la onda
-A = 1  # Amplitud de la onda
-Ti = -1  # Tiempo inicial
+Am = 1  # Amplitud de la onda
+Ti = 0 # Tiempo inicial
 Tf = 1  # Tiempo final
 Nm = 1000  # Número de muestras
-t = np.linspace(Ti, Tf, Nm)
-
+t = np.linspace(Ti, Tf, Nm )
+a = 1 # Factor de proporcionalidad de funcion exponencial
 # Onda senoidal
-senoidal = A * np.sin(2 * np.pi * f * t)
+senoidal = Am * np.sin(2 * np.pi * f * t)
 
 # Onda cuadrada
-cuadrada = A * signal.square(2 * np.pi * f * t)
+cuadrada = Am * signal.square(2 * np.pi * f * t)
 
 # Onda triangular
-triangular = A * signal.sawtooth(2 * np.pi * f * t, 0.5)
+triangular = Am * signal.sawtooth(2 * np.pi * f * t, 0.5)
 
 # Onda de diente de sierra
-diente_sierra = A * signal.sawtooth(2 * np.pi * f * t)
+diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
 
 
 
 # Exponencial decreciente
-exponencial_decreciente = np.exp(-t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
+exp_decreciente = np.exp(-a*t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
 
 
 # Exponencial creciente
-exponencial_creciente = np.exp(t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
+exp_creciente = np.exp(a*t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
 
 
 # Impulso
-timpulso = np.linspace(0, Ti , Nm)
+timpulso = np.linspace(Ti, Tf , Nm)
 def ddf(t,sig):
     val = np.zeros_like(t)
     val[(-(1/(2*sig))<=t) & (t<=(1/(2*sig)))] = 1
     return val
+sig=100000
 
-sig=1000
 
-impulso = ddf(timpulso,sig)
+impulso = np.where(timpulso == 0, 1, 0)
+
+
+
 
 # Escalón
-escalon_t = np.heaviside(t, 1)
+escalon = np.heaviside(t, 1)
 
 
 # Convoluciones
-conv_seno_expon_decreciente = np.convolve(senoidal, exponencial_decreciente, mode='full')
-conv_cuadrada_expon_creciente = np.convolve(cuadrada, exponencial_creciente, mode='full')
-conv_impulso_triangular = np.convolve(impulso, triangular, mode='full')
-conv_sierra_escalon = np.convolve(diente_sierra, escalon_t, mode='full')
+conv_seno_expon_decreciente = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
+conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full')[:len(t)]
+conv_impulso_triangular = np.convolve(triangular, impulso, mode='full')[:len(t)]
+conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 
 # Graficar las señales y sus convoluciones
-plt.figure(figsize=(12, 12))
+plt.figure(figsize=(16, 10))
 
 # Senoidal con Exponencial Decreciente
-plt.subplot(4, 3, 1)
-plt.plot(t, senoidal, label='Onda Senoidal')
-plt.title('Onda Senoidal')
-plt.grid(True)
 
-plt.subplot(4, 3, 2)
-plt.plot(t, exponencial_decreciente, label='Exponencial Decreciente')
-plt.title('Exponencial Decreciente')
-plt.grid(True)
 
-plt.subplot(4, 3, 3)
-plt.plot(t, conv_seno_expon_decreciente[:Nm])
+plt.subplot(4, 1, 1)
+plt.plot(t, conv_seno_expon_decreciente)
 plt.title('Convolución Senoidal y Exponencial Decreciente')
 plt.grid(True)
 
 # Cuadrada con Exponencial Creciente
-plt.subplot(4, 3, 4)
-plt.plot(t, cuadrada, label='Onda Cuadrada')
-plt.title('Onda Cuadrada')
-plt.grid(True)
 
-plt.subplot(4, 3, 5)
-plt.plot(t, exponencial_creciente, label='Exponencial Creciente')
-plt.title('Exponencial Creciente')
-plt.grid(True)
-
-plt.subplot(4, 3, 6)
-plt.plot(t, conv_cuadrada_expon_creciente[:Nm])
+plt.subplot(4, 1, 2)
+plt.plot(t, conv_cuadrada_expon_creciente)
 plt.title('Convolución Cuadrada y Exponencial Creciente')
 plt.grid(True)
 
 # Impulso con Triangular
-plt.subplot(4, 3, 7)
-plt.plot(t, triangular, label='Onda Triangular')
-plt.title('Onda Triangular')
-plt.grid(True)
-
-plt.subplot(4, 3, 8)
-plt.plot(t, impulso, label='Impulso')
-plt.title('Impulso Unitario')
-plt.grid(True)
 
 
-plt.subplot(4, 3, 9)
-plt.plot(t, conv_impulso_triangular[:Nm])
+plt.subplot(4, 1, 3)
+plt.plot(t, conv_impulso_triangular)
 plt.title('Convolución Impulso y Triangular')
 plt.grid(True)
 
 # Sierra con Escalón
-plt.subplot(4, 3, 10)
-plt.plot(t, diente_sierra, label='Onda de Sierra')
-plt.title('Onda de Diente de Sierra')
-plt.grid(True)
 
-plt.subplot(4, 3, 11)
-plt.plot(t, escalon_t, label='Escalón')
-plt.title('Escalón')
-plt.grid(True)
 
-plt.subplot(4, 3, 12)
-plt.plot(t, conv_sierra_escalon[:Nm])
+plt.subplot(4, 1, 4)
+plt.plot(t, conv_sierra_escalon)
 plt.title('Convolución Sierra y Escalón')
 plt.grid(True)
 
