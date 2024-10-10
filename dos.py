@@ -2,40 +2,40 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Vector de tiempo
-t = np.linspace(-1, 2, 1000)  # Ajusta el rango según sea necesario
+t = np.linspace(-1, 2, 10000) 
 
-# Señal Exponencial Decreciente (un tramo)
-exp_decreciente = np.exp(-t) * ((t >= 0) & (t < 1))
+# Señal Exponencial Decreciente acotada
+exp_decreciente = np.exp(-t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 
-# Señal Exponencial Creciente (un tramo)
-exp_creciente = np.exp(t) * ((t >= 0) & (t < 1))
+# Señal Exponencial Creciente acotada
+exp_creciente = np.exp(t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 
-# Impulso de Dirac (aproximación)
-impulso = np.where(t == 0, 1, 0)  # Aproximación básica para graficar
+# Impulso de Dirac 
+impulso = np.where(t == 0, 1, 0)  
 
 # Señal Escalón
-escalon = np.where(t >= 0, 1, 0)
+escalon = np.heaviside(t, 1)
 
 # Señal Sinc
 x = np.linspace(-10, 10, 1000)
-sinc = np.sinc(x / np.pi)  # np.sinc en numpy ya incluye pi (sinc(x/pi))
+sinc = np.sinc(x / np.pi)  
 
 # Graficar las señales
 plt.figure(figsize=(12, 10))
 
 plt.subplot(5, 1, 1)
 plt.plot(t, exp_decreciente)
-plt.title('Exponencial Decreciente (un tramo)')
+plt.title('Exponencial Decreciente acotada')
 plt.grid(True)
 
 plt.subplot(5, 1, 2)
 plt.plot(t, exp_creciente)
-plt.title('Exponencial Creciente (un tramo)')
+plt.title('Exponencial Creciente acotada')
 plt.grid(True)
 
 plt.subplot(5, 1, 3)
 plt.stem(t, impulso)
-plt.title('Impulso (Aproximado)')
+plt.title('Impulso')
 plt.grid(True)
 
 plt.subplot(5, 1, 4)

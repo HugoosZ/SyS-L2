@@ -9,8 +9,8 @@ t_periodica = np.linspace(0, T, int(fs * T), endpoint=False)
 t_aperiodica = np.linspace(-1, 2, int(fs * 3), endpoint=False)
 
 # Factores de proporcionalidad y corrimiento temporal
-k = 1  # Factor de proporcionalidad ajustado para las señales
-corrimiento = 0.05  # Corrimiento temporal más reducido
+k = 2  # Factor de proporcionalidad 
+corrimiento = 0.1  # Corrimiento temporal 
 
 # Ajustar el vector de tiempo para aplicar el corrimiento
 t_aperiodica_corrida = t_aperiodica - corrimiento  # Corrimiento hacia la derecha

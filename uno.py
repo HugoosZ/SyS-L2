@@ -3,16 +3,17 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 # Parámetros comunes
-fs = 1000  # Frecuencia de muestreo (Hz)
+fs = 1000   # Frecuencia de muestreo (Hz)
 T = 1  # Duración en segundos
-t = np.linspace(0, T, int(fs * T), endpoint=False)  # Vector de tiempo
+t = np.linspace(-1, 2, int(fs * 3), endpoint=False)  # Vector de tiempo
+t2= np.linspace(0, 1, 1000)
 
 # Señal Senoidal
 freq = 5  # Frecuencia de la señal (Hz)
 senoidal = np.sin(2 * np.pi * freq * t)
 
 # Señal Cuadrada
-cuadrada = signal.square(2 * np.pi * freq * t)
+cuadrada = signal.square(2 * np.pi * 1 * t2)
 
 # Señal Triangular
 triangular = signal.sawtooth(2 * np.pi * freq * t, 0.5)
@@ -29,7 +30,7 @@ plt.title('Señal Senoidal')
 plt.grid(True)
 
 plt.subplot(4, 1, 2)
-plt.plot(t, cuadrada)
+plt.plot(t2, cuadrada)
 plt.title('Señal Cuadrada')
 plt.grid(True)
 
