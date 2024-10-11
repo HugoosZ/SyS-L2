@@ -30,8 +30,10 @@ exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 
 exp_creciente = np.exp(a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
 # Impulso
-timpulso = np.linspace(0, Tf, Nm)
-impulso = np.where(timpulso == 0, 1, 0)
+
+index_cero = np.argmin(np.abs(t - 0))
+impulso = np.zeros_like(t)
+impulso[index_cero] = 1
 
 # Escalón
 escalon = np.heaviside(t, 1)
@@ -39,7 +41,7 @@ escalon = np.heaviside(t, 1)
 # Convoluciones
 conv_seno_expon_decreciente = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
 conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full')[:len(t)]
-conv_impulso_triangular = np.convolve(triangular, impulso, mode='full')[:len(t)]
+conv_impulso_triangular = np.convolve(triangular, impulso, mode='same')[:len(t)]
 conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 
 # Función para calcular la energía de una señal discreta

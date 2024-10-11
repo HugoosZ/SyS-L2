@@ -29,16 +29,17 @@ exp_decreciente = np.exp(-t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 exp_creciente = np.exp(t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 
 # Impulso
-print(np.min(t))
-t_impulso = np.linspace(0, 2, Nm)
-impulso = np.where(t_impulso == 0, 1, 0)
+index_cero = np.argmin(np.abs(t - 0))
+impulso = np.zeros_like(t)
+impulso[index_cero] = 1
+
 # Escalón
 escalon = np.heaviside(t,1)
 
 # Convoluciones
 conv_sin_expdecreciente = np.convolve(senoidal, exp_decreciente, mode='full')
 conv_cuadrada_expcreciente = np.convolve(cuadrada, exp_creciente, mode='full')
-conv_triangular_impulso = np.convolve(triangular, impulso, mode='full')
+conv_triangular_impulso = np.convolve(triangular, impulso, mode='same')
 conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')
 
 # Graficar las señales y sus convoluciones
@@ -88,7 +89,7 @@ plt.title('Onda Triangular')
 plt.grid(True)
 
 plt.subplot(4, 3, 9)
-plt.plot(t, conv_triangular_impulso[:Nm])
+plt.plot(t, conv_triangular_impulso)
 plt.title('Convolución Impulso y Triangular')
 plt.grid(True)
 

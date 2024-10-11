@@ -21,9 +21,9 @@ cuadrada = Am * signal.square(2 * np.pi * f * t)
 exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
 # Impulso
-timpulso = np.linspace(0, Tf, Nm)
-impulso = np.where(timpulso == 0, 1, 0)
-
+index_cero = np.argmin(np.abs(t - 0))
+impulso = np.zeros_like(t)
+impulso[index_cero] = 1
 
 # Linealidad
 a1, a2 = 2, 3  # Factores de proporcionalidad
@@ -45,7 +45,7 @@ Desplazamiento = 1
 senoidal_shift = Am * np.sin((2 * np.pi * f * t) -Desplazamiento)  # Señal desplazada en el tiempo
 
 # Convolución de la señal desplazada 
-conv_shift = np.convolve(senoidal_shift, impulso, mode='full')[:len(t)]
+conv_shift = np.convolve(senoidal_shift, impulso, mode='same')[:len(t)]
 
 
 # Graficos
