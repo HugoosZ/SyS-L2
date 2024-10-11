@@ -71,6 +71,13 @@ conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full'
 conv_impulso_triangular = np.convolve(triangular, impulso, mode='full')[:len(t)]
 conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 
+# 2(k-3(k/3 + 1/2))
+# Y[n] = sum[-1,2] x[k]h[n-k] ->x[k] = diente, h[n-k] = escalon
+# Y[n] = sum[0,2] diente[k]escalon[n-k] -> {n-k>=0} -> {n>=k}
+# Y[0] = sum[0,2] 2(0-3(0/3 + 1/2))
+# Y[1] = sum[0,2] 2(1-3(1/3 + 1/2))
+# Y[2] = sum[0,2] 2(2-3(2/3 + 1/2))
+
 # Convoluciones manuales 
 
 conv1 = convolucion_manual(senoidal, exp_decreciente)[:len(t)]

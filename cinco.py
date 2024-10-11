@@ -2,65 +2,113 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-# Parámetros para las señales
-fs = 1000  # Frecuencia de muestreo
-T = 1  # Duración en segundos
-t_periodica = np.linspace(0, T, int(fs * T), endpoint=False)
-t_aperiodica = np.linspace(-1, 2, int(fs * 3), endpoint=False)
+# Parámetros
+f = 5  # Frecuencia de la onda
+Am = 1  # Amplitud de la onda
+Ti = -1  # Tiempo inicial
+Tf = 1  # Tiempo final
+Nm = 1000  # Número de muestras
+t = np.linspace(Ti, Tf, Nm)
+a = 1  # Factor de proporcionalidad de función exponencial
 
-# Factores de proporcionalidad y corrimiento temporal
-k = 1  # Factor de proporcionalidad ajustado para las señales
-corrimiento = 0.05  # Corrimiento temporal reducido
+# Onda senoidal
+senoidal = Am * np.sin(2 * np.pi * f * t)
 
-# Ajustar el vector de tiempo para aplicar el corrimiento
-t_aperiodica_corrida = t_aperiodica - corrimiento  # Corrimiento hacia la derecha
+# Onda cuadrada
+cuadrada = Am * signal.square(2 * np.pi * f * t)
 
-# Señales Periódicas
-senoidal = np.sin(2 * np.pi * 5 * t_periodica)  # Señal senoidal
-cuadrada = signal.square(2 * np.pi * 5 * t_periodica)  # Señal cuadrada
-triangular = signal.sawtooth(2 * np.pi * 5 * t_periodica, 0.5)  # Señal triangular
-diente_sierra = signal.sawtooth(2 * np.pi * 5 * t_periodica)  # Señal diente de sierra
+# Onda triangular
+triangular = Am * signal.sawtooth(2 * np.pi * f * t, 0.5)
 
-# Señales Aperiódicas modificadas con el factor de proporcionalidad y corrimiento temporal
-exp_decreciente = k * np.exp(-t_aperiodica_corrida) * ((t_aperiodica_corrida >= 0) & (t_aperiodica_corrida < 1))
-exp_creciente = k * np.exp(t_aperiodica_corrida) * ((t_aperiodica_corrida >= 0) & (t_aperiodica_corrida < 1))
-impulso = k * np.where(np.abs(t_aperiodica_corrida) < 0.01, 1, 0)  # Impulso como una ventana más pequeña
-escalon = k * np.where(t_aperiodica_corrida >= 0, 1, 0)
+# Onda de diente de sierra
+diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
 
-# Combinaciones de convoluciones intercambiadas
-conv_combinacion_1 = np.convolve(exp_decreciente, cuadrada, mode='same')[:len(t_periodica)]
-conv_combinacion_2 = np.convolve(exp_creciente, senoidal, mode='same')[:len(t_periodica)]
-conv_combinacion_3 = np.convolve(impulso, diente_sierra, mode='same')[:len(t_periodica)]
-conv_combinacion_4 = np.convolve(escalon, triangular, mode='same')[:len(t_periodica)]
-conv_combinacion_5 = np.convolve(exp_decreciente, diente_sierra, mode='same')[:len(t_periodica)]
+# Exponencial decreciente
+exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
-# Graficar las 5 combinaciones
-plt.figure(figsize=(12, 12))
+# Exponencial creciente
+exp_creciente = np.exp(a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
-plt.subplot(5, 1, 1)
-plt.plot(t_periodica, conv_combinacion_1)
-plt.title('Convolución: Exp. Decreciente con Cuadrada')
+# Impulso
+timpulso = np.linspace(0, Tf, Nm)
+impulso = np.where(timpulso == 0, 1, 0)
+
+# Escalón
+escalon = np.heaviside(t, 1)
+
+# Convoluciones
+conv_seno_expon_decreciente = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
+conv_cuadrada_expon_creciente = np.convolve(cuadrada, exp_creciente, mode='full')[:len(t)]
+conv_triangular_impulso = np.convolve(triangular, impulso, mode='full')[:len(t)]
+conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
+
+# Nuevas combinaciones
+conv_seno_impulso = np.convolve(senoidal, impulso, mode='full')[:len(t)]
+conv_cuadrada_escalon = np.convolve(cuadrada, escalon, mode='full')[:len(t)]
+conv_triangular_exp_creciente = np.convolve(triangular, exp_creciente, mode='full')[:len(t)]
+conv_sierra_exp_decreciente = np.convolve(diente_sierra, exp_decreciente, mode='full')[:len(t)]
+
+# Extra combinación para completar los 9 gráficos
+conv_cuadrada_impulso = np.convolve(cuadrada, impulso, mode='full')[:len(t)]
+
+# Graficar las señales y sus convoluciones
+plt.figure(figsize=(16, 10))  # Ajustar tamaño del gráfico
+
+# 3 columnas, 4 filas (total 9 gráficos)
+# Gráfico 1: Senoidal con Exponencial Decreciente
+plt.subplot(4, 3, 1)
+plt.plot(t, conv_seno_expon_decreciente)
+plt.title('Senoidal con Exponencial Decreciente')
 plt.grid(True)
 
-plt.subplot(5, 1, 2)
-plt.plot(t_periodica, conv_combinacion_2)
-plt.title('Convolución: Exp. Creciente con Senoidal')
+# Gráfico 2: Cuadrada con Exponencial Creciente
+plt.subplot(4, 3, 2)
+plt.plot(t, conv_cuadrada_expon_creciente)
+plt.title('Cuadrada con Exponencial Creciente')
 plt.grid(True)
 
-plt.subplot(5, 1, 3)
-plt.plot(t_periodica, conv_combinacion_3)
-plt.title('Convolución: Impulso con Diente de Sierra')
+# Gráfico 3: Triangular con Impulso
+plt.subplot(4, 3, 3)
+plt.plot(t, conv_triangular_impulso)
+plt.title('Triangular con Impulso')
 plt.grid(True)
 
-plt.subplot(5, 1, 4)
-plt.plot(t_periodica, conv_combinacion_4)
-plt.title('Convolución: Escalón con Triangular')
+# Gráfico 4: Sierra con Escalón
+plt.subplot(4, 3, 4)
+plt.plot(t, conv_sierra_escalon)
+plt.title('Sierra con Escalón')
 plt.grid(True)
 
-plt.subplot(5, 1, 5)
-plt.plot(t_periodica, conv_combinacion_5)
-plt.title('Convolución: Exp. Decreciente con Diente de Sierra')
+# Gráfico 5: Senoidal con Impulso
+plt.subplot(4, 3, 5)
+plt.plot(t, conv_seno_impulso)
+plt.title('Senoidal con Impulso')
 plt.grid(True)
 
+# Gráfico 6: Cuadrada con Escalón
+plt.subplot(4, 3, 6)
+plt.plot(t, conv_cuadrada_escalon)
+plt.title('Cuadrada con Escalón')
+plt.grid(True)
+
+# Gráfico 7: Triangular con Exponencial Creciente
+plt.subplot(4, 3, 7)
+plt.plot(t, conv_triangular_exp_creciente)
+plt.title('Triangular con Exponencial Creciente')
+plt.grid(True)
+
+# Gráfico 8: Sierra con Exponencial Decreciente
+plt.subplot(4, 3, 8)
+plt.plot(t, conv_sierra_exp_decreciente)
+plt.title('Sierra con Exponencial Decreciente')
+plt.grid(True)
+
+# Gráfico 9: Cuadrada con Impulso
+plt.subplot(4, 3, 9)
+plt.plot(t, conv_cuadrada_impulso)
+plt.title('Cuadrada con Impulso')
+plt.grid(True)
+
+# Ajustar los gráficos
 plt.tight_layout()
 plt.show()
