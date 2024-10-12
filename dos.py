@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Vector de tiempo
-t = np.linspace(-1, 2, 10000) 
+t = np.linspace(-2, 2, 10000) 
 
 # Señal Exponencial Decreciente acotada
 exp_decreciente = np.exp(-t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))

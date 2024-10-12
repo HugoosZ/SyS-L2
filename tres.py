@@ -5,8 +5,8 @@ from scipy import signal
 # Parámetros
 f = 5  # Frecuencia de la onda
 Am = 1  # Amplitud de la onda
-Ti = -1 # Tiempo inicial
-Tf = 1# Tiempo final
+Ti = -2 # Tiempo inicial
+Tf = 2# Tiempo final
 Nm = 4000 # Número de muestras
 t = np.linspace(Ti, Tf, Nm )
 a = 1 # Factor de proporcionalidad de funcion exponencial

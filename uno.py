@@ -3,23 +3,21 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 # Parámetros comunes
-fs = 1000   # Frecuencia de muestreo (Hz)
+Nm = 4000 # Número de muestras
+f = 5       # Frecuencia de la señal (Hz)
 T = 1  # Duración en segundos
-t = np.linspace(-1, 2, int(fs * 3), endpoint=False)  # Vector de tiempo
-t2= np.linspace(0, 1, 1000)
-
+t = np.linspace(-2, 2, Nm)  # Vector de tiempo
 # Señal Senoidal
-freq = 5  # Frecuencia de la señal (Hz)
-senoidal = np.sin(2 * np.pi * freq * t)
+senoidal = np.sin(2 * np.pi * f * t)
 
 # Señal Cuadrada
-cuadrada = signal.square(2 * np.pi * 1 * t2)
+cuadrada = signal.square(2 * np.pi * 1 * t)
 
 # Señal Triangular
-triangular = signal.sawtooth(2 * np.pi * freq * t, 0.5)
+triangular = signal.sawtooth(2 * np.pi * f * t, 0.5)
 
 # Señal Diente de Sierra
-diente_sierra = signal.sawtooth(2 * np.pi * freq * t)
+diente_sierra = signal.sawtooth(2 * np.pi * f * t)
 
 # Graficar las señales
 plt.figure(figsize=(12, 8))
@@ -30,7 +28,7 @@ plt.title('Señal Senoidal')
 plt.grid(True)
 
 plt.subplot(4, 1, 2)
-plt.plot(t2, cuadrada)
+plt.plot(t, cuadrada)
 plt.title('Señal Cuadrada')
 plt.grid(True)
 
