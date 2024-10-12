@@ -21,9 +21,9 @@ cuadrada = Am * signal.square(2 * np.pi * f * t)
 exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
 # Impulso
-index_cero = np.argmin(np.abs(t - 0))
+cero = np.argmin(np.abs(t - 0))
 impulso = np.zeros_like(t)
-impulso[index_cero] = 1
+impulso[cero] = 1
 
 # Linealidad
 a1, a2 = 2, 3  # Factores de proporcionalidad
