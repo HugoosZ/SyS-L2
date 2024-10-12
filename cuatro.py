@@ -12,7 +12,7 @@ t = np.linspace(Ti, Tf, Nm)
 
 a = 1  # Factor de proporcionalidad de función exponencial
 k = 2  # Factor de proporcionalidad aplicado
-Desplazamiento = 1  # Corrimiento temporal (en segundos)
+Desplazamiento = 0.5  # Corrimiento temporal (en segundos)
 
 # Onda senoidal
 senoidal = Am * np.sin(2 * np.pi * f * t)
@@ -55,33 +55,30 @@ conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 plt.figure(figsize=(16, 10))
 
 # Convolucion señal Senoidal con Exponencial Decreciente
-plt.subplot(5, 1, 1)
+plt.subplot(4, 1, 1)
 plt.plot(t, conv_seno_expon_decreciente)
 plt.title(f'Convolución Senoidal y Exponencial Decreciente (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Convolucion señal Cuadrada con Exponencial Creciente
-plt.subplot(5, 1, 2)
+plt.subplot(4, 1, 2)
 plt.plot(t, conv_cuadrada_expon_creciente)
 plt.title(f'Convolución Cuadrada y Exponencial Creciente (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Convolucion señal Impulso con Triangular
-plt.subplot(5, 1, 3)
+plt.subplot(4, 1, 3)
 plt.plot(t, conv_impulso_triangular)
 plt.title(f'Convolución Impulso y Triangular (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
 # Convolucion señal Sierra con Escalón
-plt.subplot(5, 1, 4)
+plt.subplot(4, 1, 4)
 plt.plot(t, conv_sierra_escalon)
 plt.title(f'Convolución Sierra y Escalón (k={k}, Corrimiento={Desplazamiento}s)')
 plt.grid(True)
 
-plt.subplot(5, 1, 5)
-plt.plot(t, impulso)
-plt.title(f'Convolución Sierra y Escalón (k={k}, Corrimiento={Desplazamiento}s)')
-plt.grid(True)
+
 
 
 plt.tight_layout()
