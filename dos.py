@@ -11,9 +11,9 @@ exp_decreciente = np.exp(-t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 exp_creciente = np.exp(t) * (np.heaviside(t, 1) - np.heaviside(t - 1, 1))
 
 # Impulso de Dirac 
-index_cero = np.argmin(np.abs(t - 0))
+cero = np.argmin(np.abs(t - 0))
 impulso = np.zeros_like(t)
-impulso[index_cero] = 1
+impulso[cero] = 1
 
 # Señal Escalón
 escalon = np.heaviside(t, 1)
