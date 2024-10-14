@@ -11,31 +11,24 @@ Nm = 1000  # Número de muestras
 t = np.linspace(Ti, Tf, Nm)
 a = 1  # Factor de proporcionalidad de función exponencial
 
-# Onda senoidal
+# Ondas Periodicas
 senoidal = Am * np.sin(2 * np.pi * f * t)
-
-# Onda cuadrada
 cuadrada = Am * signal.square(2 * np.pi * f * t)
-
-# Onda triangular
 triangular = Am * signal.sawtooth(2 * np.pi * f * t, 0.5)
-
-# Onda de diente de sierra
 diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
 
-# Exponencial decreciente
+# Ondas A-periodicas
 exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
-
-# Exponencial creciente
 exp_creciente = np.exp(a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
 
-# Impulso
 cero = np.argmin(np.abs(t - 0))
 impulso = np.zeros_like(t)
 impulso[cero] = 1
 
-# Escalón
 escalon = np.heaviside(t, 1)
+
+x = np.linspace(-10, 10, 1000)
+sinc = np.sinc(x / np.pi) 
 
 # Convoluciones
 conv_seno_expon_decreciente = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
@@ -44,10 +37,10 @@ conv_triangular_impulso = np.convolve(triangular, impulso, mode='same')
 conv_sierra_escalon = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 
 # Nuevas combinaciones
-conv_seno_impulso = np.convolve(senoidal, impulso, mode='same')
+conv_diente_impulso = np.convolve(diente_sierra, impulso, mode='same')
 conv_triangular_escalon = np.convolve(cuadrada, escalon, mode='full')[:len(t)]
-conv_triangular_exp_creciente = np.convolve(triangular, exp_creciente, mode='full')[:len(t)]
-conv_sierra_exp_decreciente = np.convolve(diente_sierra, exp_decreciente, mode='full')[:len(t)]
+conv_triangular_sinc = np.convolve(triangular, sinc, mode='full')[:len(t)]
+conv_sin_sinc = np.convolve(senoidal, sinc, mode='full')[:len(t)]
 conv_cuadrada_impulso = np.convolve(cuadrada, impulso, mode='same')
 
 # Grafico de convoluciones
@@ -74,8 +67,8 @@ plt.title('Sierra con Escalón')
 plt.grid(True)
 
 plt.subplot(4, 3, 5)
-plt.plot(t, conv_seno_impulso)
-plt.title('Senoidal con Impulso')
+plt.plot(t, conv_diente_impulso)
+plt.title('Diente de sierra con Impulso')
 plt.grid(True)
 
 plt.subplot(4, 3, 6)
@@ -84,13 +77,13 @@ plt.title('Triangular con Escalón')
 plt.grid(True)
 
 plt.subplot(4, 3, 7)
-plt.plot(t, conv_triangular_exp_creciente)
-plt.title('Triangular con Exponencial Creciente')
+plt.plot(t, conv_triangular_sinc)
+plt.title('Triangular con Sinc')
 plt.grid(True)
 
 plt.subplot(4, 3, 8)
-plt.plot(t, conv_sierra_exp_decreciente)
-plt.title('Sierra con Exponencial Decreciente')
+plt.plot(t, conv_sin_sinc)
+plt.title('Sin con Sinc')
 plt.grid(True)
 
 plt.subplot(4, 3, 9)
