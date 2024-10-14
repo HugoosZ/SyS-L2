@@ -76,24 +76,6 @@ conv_linealidad2 = C * conv_seno2 + C * conv_cuadrada2
 conv_linealidad3 = C * conv_triangular3 + C * conv_diente_sierra3
 conv_linealidad4 = C * conv_seno4 + C * conv_diente_sierra4
 
-
-
-# Invariancia 
-Desplazamiento = 0.5
-# Señal desplazada en el tiempo
-senoidalD = Am * np.sin((2 * np.pi * f * (t_aplicado)))  # Señal desplazada en el tiempo
-cuadradaD = signal.square((2 * np.pi * f * t) -Desplazamiento)
-triangularD = signal.sawtooth((2 * np.pi * f * t -Desplazamiento), 0.5)
-diente_sierraD = signal.sawtooth((2 * np.pi * f * t) -Desplazamiento)
-
-# Convolución de la señal desplazada 
-convD0 = np.convolve(senoidalD, exp_decreciente, mode='full')[:len(t)]
-convD1 = np.convolve(cuadradaD, exp_creciente, mode='full')[:len(t)]
-convD2 = np.convolve(triangularD, impulso, mode='same')
-convD3 = np.convolve(diente_sierraD, escalon, mode='full')[:len(t)]
-convD4 = np.convolve(senoidalD, sinc, mode='full')[:len(t)]
-
-
 # Graficos
 plt.figure(figsize=(12, 6))
 
