@@ -30,9 +30,7 @@ exp_creciente = np.exp(a*t) * ((np.heaviside(t, 1)) - (np.heaviside(t-1, 1)))
 
 # Impulso
 cero = np.argmin(np.abs(t- 0))
-print(cero)
 impulso = np.zeros_like(t)
-print (impulso)
 impulso[cero] = 1
 
 # Escalón

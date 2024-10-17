@@ -10,6 +10,8 @@ Tf = 2  # Tiempo final
 Nm = 1000  # Número de muestras
 t = np.linspace(Ti, Tf, Nm)
 a = 1  # Factor de proporcionalidad de función exponencial
+
+# Corrimiento temporal
 Desplazamiento = 1  # Corrimiento temporal (en segundos)
 t_aplicado = t - Desplazamiento  # Aplicar corrimiento temporal hacia la derecha
 
@@ -29,10 +31,7 @@ escalon = np.heaviside(t, 1)
 x = np.linspace(-10, 10, 1000)
 sinc = np.sinc(x / np.pi)  
 
-# Invariancia 
-Desplazamiento = 1
-
-# Respuestas al impulso
+# Convolución de la señal sin desplazar
 conv0 = np.convolve(senoidal, exp_decreciente, mode='full')[:len(t)]
 conv1 = np.convolve(cuadrada, exp_creciente, mode='full')[:len(t)]
 conv2 = np.convolve(triangular, impulso, mode='same')
@@ -40,7 +39,7 @@ conv3 = np.convolve(diente_sierra, escalon, mode='full')[:len(t)]
 conv4 = np.convolve(senoidal, sinc, mode='full')[:len(t)]
 
 # Señal desplazada en el tiempo
-senoidalD = Am * np.sin((2 * np.pi * f * t_aplicado))  # Señal desplazada en el tiempo
+senoidalD = Am * np.sin((2 * np.pi * f * t_aplicado))  
 cuadradaD = signal.square((2 * np.pi * f * t_aplicado))
 triangularD = signal.sawtooth((2 * np.pi * f * t_aplicado), 0.5)
 diente_sierraD = signal.sawtooth(2 * np.pi * f * t_aplicado)
@@ -51,7 +50,6 @@ convD1 = np.convolve(cuadradaD, exp_creciente, mode='full')[:len(t)]
 convD2 = np.convolve(triangularD, impulso, mode='same')
 convD3 = np.convolve(diente_sierraD, escalon, mode='full')[:len(t)]
 convD4 = np.convolve(senoidalD, sinc, mode='full')[:len(t)]
-
 
 # Graficos
 plt.figure(figsize=(16, 10))

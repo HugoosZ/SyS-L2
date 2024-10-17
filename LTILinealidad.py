@@ -10,9 +10,6 @@ Tf = 2  # Tiempo final
 Nm = 1000  # Número de muestras
 t = np.linspace(Ti, Tf, Nm)
 a = 1  # Factor de proporcionalidad de función exponencial
-Desplazamiento = 0.5  # Corrimiento temporal (en segundos)
-t_aplicado = t - Desplazamiento  # Aplicar corrimiento temporal hacia la derecha
-
 
 
 # Ondas Periodicas
@@ -20,8 +17,6 @@ senoidal = Am * np.sin(2 * np.pi * f * t)
 triangular = signal.sawtooth(2 * np.pi * f * t, 0.5)
 cuadrada = Am * signal.square(2 * np.pi * f * t)
 diente_sierra = Am * signal.sawtooth(2 * np.pi * f * t)
-
-
 
 # Ondas A-periodicas
 exp_decreciente = np.exp(-a * t) * ((np.heaviside(t, 1)) - (np.heaviside(t - 1, 1)))
@@ -44,7 +39,7 @@ combinacion2 = C * senoidal + C * cuadrada
 combinacion3 = C * triangular + C * diente_sierra
 combinacion4 = C * senoidal + C * diente_sierra
 
-# Convolución de la combinación lineal de las señales con la respuesta exponencial decreciente
+# Convolución de la suma de señales 
 conv_combinacion0 = np.convolve(combinacion0, exp_decreciente, mode='full')[:len(t)]
 conv_combinacion1 = np.convolve(combinacion1, exp_creciente, mode='full')[:len(t)]
 conv_combinacion2 = np.convolve(combinacion2, impulso, mode='same')
@@ -80,36 +75,36 @@ conv_linealidad4 = C * conv_seno4 + C * conv_diente_sierra4
 plt.figure(figsize=(12, 6))
 
 plt.subplot(3, 2, 1)
-plt.plot(t, conv_linealidad0, label='Pre-Convolución')
-plt.plot(t, conv_combinacion0, '--', label='Post-Convolución')
+plt.plot(t, conv_linealidad0, label='Convolucion-suma')
+plt.plot(t, conv_combinacion0, '--', label='Suma-convolucion')
 plt.title(f'Prueba de Linealidad senoidal y triangular en exponencial decreciente')
 plt.grid(True)
 plt.legend()
 
 plt.subplot(3, 2, 2)
-plt.plot(t, conv_linealidad1, label='Pre-Convolución')
-plt.plot(t, conv_combinacion1, '--', label='Post-Convolución')
+plt.plot(t, conv_linealidad1, label='Convolucion-suma')
+plt.plot(t, conv_combinacion1, '--', label='Suma-convolucion')
 plt.title(f'Prueba de Linealidad cuadrada y diente de sierra en exponencial creciente')
 plt.grid(True)
 plt.legend()
 
 plt.subplot(3, 2, 3)
-plt.plot(t, conv_linealidad2, label='Pre-Convolución')
-plt.plot(t, conv_combinacion2, '--', label='Post-Convolución')
+plt.plot(t, conv_linealidad2, label='Convolucion-suma')
+plt.plot(t, conv_combinacion2, '--', label='Suma-convolucion')
 plt.title(f'Prueba de Linealidad senoidal y cuadrada en impulso')
 plt.grid(True)
 plt.legend()
 
 plt.subplot(3, 2, 4)
-plt.plot(t, conv_linealidad3, label='Pre-Convolución')
-plt.plot(t, conv_combinacion3, '--', label='Post-Convolución')
+plt.plot(t, conv_linealidad3, label='Convolucion-suma')
+plt.plot(t, conv_combinacion3, '--', label='Suma-convolucion')
 plt.title(f'Prueba de Linealidad triangular y diente de sierra en escalón')
 plt.grid(True)
 plt.legend()
 
 plt.subplot(3, 2, 5)
-plt.plot(t, conv_linealidad4, label='Pre-Convolución')
-plt.plot(t, conv_combinacion4, '--', label='Post-Convolución')
+plt.plot(t, conv_linealidad4, label='Convolucion-suma')
+plt.plot(t, conv_combinacion4, '--', label='Suma-convolucion')
 plt.title(f'Prueba de Linealidad senoidal y diente de sierra en sinc')
 plt.grid(True)
 plt.legend()
